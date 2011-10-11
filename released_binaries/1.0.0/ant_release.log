@@ -1,0 +1,71 @@
+Buildfile: /Users/zaki/fromgit/MogMogMonitor/build.xml
+    [setup] Android SDK Tools Revision 13
+    [setup] Project Target: Android 2.1-update1
+    [setup] API level: 7
+    [setup] 
+    [setup] ------------------
+    [setup] Resolving library dependencies:
+    [setup] No library dependencies.
+    [setup] 
+    [setup] ------------------
+    [setup] 
+    [setup] 
+    [setup] Importing rules file: tools/ant/main_rules.xml
+
+-set-release-mode:
+
+-release-obfuscation-check:
+
+-pre-build:
+
+-dirs:
+     [echo] Creating output directories if needed...
+    [mkdir] Created dir: /Users/zaki/fromgit/MogMogMonitor/bin
+    [mkdir] Created dir: /Users/zaki/fromgit/MogMogMonitor/gen
+    [mkdir] Created dir: /Users/zaki/fromgit/MogMogMonitor/bin/classes
+
+-aidl:
+     [echo] Compiling aidl files into Java classes...
+
+-renderscript:
+     [echo] Compiling RenderScript files into Java classes and RenderScript bytecode...
+
+-resource-src:
+     [echo] Generating R.java / Manifest.java from the resources...
+
+-pre-compile:
+
+compile:
+    [javac] /Applications/android-sdk-mac_x86/tools/ant/main_rules.xml:385: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] Compiling 4 source files to /Users/zaki/fromgit/MogMogMonitor/bin/classes
+
+-post-compile:
+
+-obfuscate:
+
+-dex:
+     [echo] Converting compiled files and external libraries into /Users/zaki/fromgit/MogMogMonitor/bin/classes.dex...
+
+-package-resources:
+     [echo] Packaging resources
+     [aapt] Creating full resource package...
+     [aapt]     (skipping hidden file '/Users/zaki/fromgit/MogMogMonitor/assets/.gitignore')
+
+-package-release:
+[apkbuilder] Creating PrefActivity-unsigned.apk for release...
+
+-release-prompt-for-password:
+    [input] Please enter keystore password (store:/Users/zaki/.android/release.keystore):
+    [input] Please enter password for alias 'android_app_release':
+
+-release-nosign:
+
+release:
+     [echo] Signing final apk...
+  [signjar] Signing JAR: /Users/zaki/fromgit/MogMogMonitor/bin/PrefActivity-unsigned.apk to /Users/zaki/fromgit/MogMogMonitor/bin/PrefActivity-unaligned.apk as android_app_release
+  [signjar] キーストアのパスワードを入力してください: 
+     [echo] Running zip align on final apk...
+     [echo] Release Package: /Users/zaki/fromgit/MogMogMonitor/bin/PrefActivity-release.apk
+
+BUILD SUCCESSFUL
+Total time: 9 seconds
