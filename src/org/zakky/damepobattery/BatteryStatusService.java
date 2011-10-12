@@ -43,7 +43,7 @@ public class BatteryStatusService extends Service {
         return null;
     }
 
-    private static BroadcastReceiver sBatteryChangedReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver sBatteryChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent broadcast) {
             if (broadcast.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
@@ -52,16 +52,18 @@ public class BatteryStatusService extends Service {
                         + sPrevLevel);
                 if (level < 0)
                     return;
-                updateBatteryLevel(context, level);
+                updateBatteryLevel(level);
                 return;
             }
         }
     };
 
-    private static void updateBatteryLevel(Context context, int level) {
+    private void updateBatteryLevel(int level) {
         if (sPrevLevel >= 0) {
             if (level < sPrevLevel) {
-                controlNotification(context);
+                controlNotification(true);
+            } else if (level > sPrevLevel) {
+                controlNotification(false);
             }
         }
         sPrevLevel = level;
@@ -71,12 +73,12 @@ public class BatteryStatusService extends Service {
      * shows the notification when context is given, clears the notification
      * when context is null
      */
-    private static void controlNotification(Context context) {
+    private void controlNotification(boolean show) {
         final NotificationManager nm = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
+                getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancelAll();
-        if (context != null) {
-            final Notification n = buildNotification(context);
+        if (show) {
+            final Notification n = buildNotification(self);
             nm.notify(R.string.app_name, n);
         }
     }
@@ -91,6 +93,7 @@ public class BatteryStatusService extends Service {
     @Override
     public void onDestroy() {
         unregisterReceiver(sBatteryChangedReceiver);
+        controlNotification(false);
     }
 
     /**
@@ -98,7 +101,7 @@ public class BatteryStatusService extends Service {
      * 
      * @return インテント。
      */
-    private static Intent buildIntentForStatusSettings() {
+    private Intent buildIntentForStatusSettings() {
         final Intent i = new Intent("android.intent.action.MAIN");
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setClassName("com.android.settings", "com.android.settings.deviceinfo.Status");
@@ -111,7 +114,7 @@ public class BatteryStatusService extends Service {
      * @param context コンテキスト。
      * @return ノティフィケーション。
      */
-    private static Notification buildNotification(Context context) {
+    private Notification buildNotification(Context context) {
         final Notification n = new Notification(R.drawable.icon, "充電中のバッテリー残量低下を検出しました。",
                 System.currentTimeMillis());
 
