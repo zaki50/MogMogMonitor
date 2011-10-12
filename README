@@ -2,3 +2,12 @@
 あったので、そのような場合に通知するアプリを作成しました。
 
 ライセンスは Apache License 2.0 です。
+
+もし、コードをコントリビュートして頂ける場合は、AOSP(Android Open Source Project) の
+Code Style Guildlines for Contributors( http://source.android.com/source/code-style.html )
+に従ってコーディングするようにお願いします。
+
+eclipe 用の フォーマッター、import order rule が用意されています。
+eclipse の設定方法は、以下のエントリを参照してください。
+
+http://zunda.freeshell.org/d/20111011.html#p01
