@@ -25,80 +25,83 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * バッテリーに関するブロードキャストインテントを受信して、必要があればユーザーに対して
- * 通知を行うクラスです。
+ * バッテリーに関するブロードキャストインテントを受信して、必要があればユーザーに対して 通知を行うクラスです。
  */
 public class BatteryStatusReceiver extends BroadcastReceiver {
-    @SuppressWarnings("unused")
-    private final BatteryStatusReceiver self = this;
+	@SuppressWarnings("unused")
+	private final BatteryStatusReceiver self = this;
 
-    private static Integer sPrevLevel;
+	private static Integer sPrevLevel;
+	private static boolean sMonitoring;
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (intent == null) {
-            return;
-        }
-        final boolean enabled = Config.isEnabled(context);
-        if (!enabled) {
-            sPrevLevel = null;
-            // TODO on-going notification の非表示
-            return;
-        }
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		if (intent == null) {
+			return;
+		}
 
-        if (intent.getAction().equals(Intent.ACTION_POWER_CONNECTED)) {
-            return;
-        } else if (intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED)) {
-            sPrevLevel = null;
-            return;
-        } else if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
-            final int level = intent.getIntExtra("level", -1);
-            if (level < 0) {
-                return;
-            }
-            if (sPrevLevel != null && level < sPrevLevel.intValue()) {
-                // とりあえずテスト用に増えた時にログを出す
-                Log.i("mogu", "incresed to " + level);
+		if (intent.getAction().equals(Intent.ACTION_POWER_CONNECTED)) {
+			Log.i("mogu", "ACTION_POWER_CONNECTED");
+			sMonitoring = true;
+			return;
+		} else if (intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED)) {
+			Log.i("mogu", "ACTION_POWER_DISCONNECTED");
+			sPrevLevel = null;
+			sMonitoring = false;
+			return;
+		} else if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
+			if (sMonitoring) {
+				final int level = intent.getIntExtra("level", -1);
+				Log.i("mogu",
+						"ACTION_BATTERY_CHANGED:" + Integer.valueOf(level)
+								+ " previous:" + sPrevLevel);
+				if (level < 0) {
+					return;
+				}
+				if (sPrevLevel != null && level < sPrevLevel.intValue()) {
+					final NotificationManager nm = (NotificationManager) context
+							.getSystemService(Context.NOTIFICATION_SERVICE);
+					nm.cancelAll();
+					final Notification n = buildNotification(context);
+					nm.notify(R.string.app_name, n);
+				}
+				sPrevLevel = Integer.valueOf(level);
+			}
+			return;
+		} else {
+			Log.i("mogu", "unexpected intent: " + intent.getAction());
+		}
+	}
 
-                final NotificationManager nm = (NotificationManager) context
-                        .getSystemService(Context.NOTIFICATION_SERVICE);
-                nm.cancelAll();
-                final Notification n = buildNotification(context);
-                nm.notify(R.string.app_name, n);
-            }
-            sPrevLevel = Integer.valueOf(level);
-            return;
-        } else {
-            Log.i("mogu", "unexpected intent: " + intent.getAction());
-        }
-    }
+	/**
+	 * Settings アプリのステータス画面を表示するインテントを構築します。
+	 * 
+	 * @return インテント。
+	 */
+	private Intent buildIntentForStatusSettings() {
+		final Intent i = new Intent("android.intent.action.MAIN");
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		i.setClassName("com.android.settings",
+				"com.android.settings.deviceinfo.Status");
+		return i;
+	}
 
-    /**
-     * Settings アプリのステータス画面を表示するインテントを構築します。
-     * @return インテント。
-     */
-    private Intent buildIntentForStatusSettings() {
-        final Intent i = new Intent("android.intent.action.MAIN");
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.setClassName("com.android.settings", "com.android.settings.deviceinfo.Status");
-        return i;
-    }
+	/**
+	 * ノティフィケーションオブジェクトを構築して返します。
+	 * 
+	 * @param context
+	 *            コンテキスト。
+	 * @return ノティフィケーション。
+	 */
+	private Notification buildNotification(Context context) {
+		final Notification n = new Notification(R.drawable.icon,
+				"充電中のバッテリー残量低下を検出しました。", System.currentTimeMillis());
 
-    /**
-     * ノティフィケーションオブジェクトを構築して返します。
-     *
-     * @param context コンテキスト。
-     * @return ノティフィケーション。
-     */
-    private Notification buildNotification(Context context) {
-        final Notification n = new Notification(R.drawable.icon, "充電中のバッテリー残量低下を検出しました。",
-                System.currentTimeMillis());
+		final Intent i = buildIntentForStatusSettings();
+		final PendingIntent pi = PendingIntent.getActivity(context, 0, i, 0);
 
-        final Intent i = buildIntentForStatusSettings();
-        final PendingIntent pi = PendingIntent.getActivity(context, 0, i, 0);
-
-        n.setLatestEventInfo(context, context.getString(R.string.app_name), "もぐもぐされています", pi);
-        return n;
-    }
-
+		n.setLatestEventInfo(context, context.getString(R.string.app_name),
+				"もぐもぐされています", pi);
+		return n;
+	}
 }
