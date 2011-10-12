@@ -24,6 +24,8 @@ public class BatteryStatusService extends Service {
 			mBatteryStatusReceiver = new BatteryStatusReceiver();
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+		intentFilter.addAction(Intent.ACTION_POWER_CONNECTED);
+		intentFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
 		registerReceiver(mBatteryStatusReceiver, intentFilter);
 	}
 

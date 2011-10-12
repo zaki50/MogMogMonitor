@@ -47,11 +47,7 @@ public class PrefActivity extends Activity {
             public void onClick(View v) {
                 final boolean enabled = mEnabled.isChecked();
                 Config.setEnabled(self, enabled);
-                Intent intent = new Intent(self, BatteryStatusService.class);
-                if (enabled)
-                	startService(intent);
-                else
-                	stopService(intent);
+                controlService(enabled);
             }
         });
     }
@@ -63,5 +59,15 @@ public class PrefActivity extends Activity {
         // 設定をUIに反映させる
         final boolean autoStartEnabled = Config.isEnabled(this);
         mEnabled.setChecked(autoStartEnabled);
+        controlService(autoStartEnabled);
+    }
+    
+    private void controlService(boolean enabled)
+    {
+        Intent intent = new Intent(self, BatteryStatusService.class);
+        if (enabled)
+        	startService(intent);
+        else
+        	stopService(intent);
     }
 }
