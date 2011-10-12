@@ -61,13 +61,12 @@ public class PrefActivity extends Activity {
         mEnabled.setChecked(autoStartEnabled);
         controlService(autoStartEnabled);
     }
-    
-    private void controlService(boolean enabled)
-    {
+
+    private void controlService(boolean enabled) {
         Intent intent = new Intent(self, BatteryStatusService.class);
         if (enabled)
-        	startService(intent);
+            startService(intent);
         else
-        	stopService(intent);
+            stopService(intent);
     }
 }
