@@ -56,17 +56,19 @@ public class BatteryStatusReceiver extends BroadcastReceiver {
             if (level < 0) {
                 return;
             }
-            if (sPrevLevel != null && level < sPrevLevel.intValue()) {
-                // とりあえずテスト用に増えた時にログを出す
-                Log.i("mogu", "incresed to " + level);
-
+           if (sPrevLevel != null)
+        	   {
+        	   if (level != sPrevLevel.intValue())
+                   Log.i("mogu", "Battery level changed to " + level);
+        	   	if (level < sPrevLevel.intValue()) {
                 final NotificationManager nm = (NotificationManager) context
                         .getSystemService(Context.NOTIFICATION_SERVICE);
                 nm.cancelAll();
                 final Notification n = buildNotification(context);
                 nm.notify(R.string.app_name, n);
+        	   	}
+                sPrevLevel = Integer.valueOf(level);
             }
-            sPrevLevel = Integer.valueOf(level);
             return;
         } else {
             Log.i("mogu", "unexpected intent: " + intent.getAction());
