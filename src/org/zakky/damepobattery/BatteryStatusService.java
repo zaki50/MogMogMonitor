@@ -35,7 +35,7 @@ public class BatteryStatusService extends Service {
     private final BatteryStatusService self = this;
 
     /** Battery level from previous change, < 0 when invalid */
-    private static int sPrevLevel = -1;
+    private static int mPrevLevel = -1;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -49,7 +49,7 @@ public class BatteryStatusService extends Service {
             if (broadcast.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
                 int level = broadcast.getIntExtra("level", -1);
                 Log.i("mogu", "ACTION_BATTERY_CHANGED:" + Integer.valueOf(level) + " previous:"
-                        + sPrevLevel);
+                        + mPrevLevel);
                 if (level < 0)
                     return;
                 updateBatteryLevel(level);
@@ -59,14 +59,14 @@ public class BatteryStatusService extends Service {
     };
 
     private void updateBatteryLevel(int level) {
-        if (sPrevLevel >= 0) {
-            if (level < sPrevLevel) {
+        if (mPrevLevel >= 0) {
+            if (level < mPrevLevel) {
                 controlNotification(true);
-            } else if (level > sPrevLevel) {
+            } else if (level > mPrevLevel) {
                 controlNotification(false);
             }
         }
-        sPrevLevel = level;
+        mPrevLevel = level;
     }
 
     /*
